@@ -1,43 +1,77 @@
 var express = require("express");
 var router = express.Router();
 
-let cartMap = {}
+let cartMap = {};
 
 /* GET users listing. */
 router.all("/", function(req, res, next) {
-  //res.send('respond with a resource');
-  res.json({ status: true, data: products });
+  let { page = 1, size = products.length } = req.body;
+  let start = (page - 1) * size;
+  let end = start + size;
+  res.json({
+    status: true,
+    data: products.slice(start, end),
+    total: products.length,
+    page
+  });
 });
 
-router.post("/add-to-cart", function (req, res, next) {
-    let {userName, id} = req.body;
-    let cart = cartMap[userName] || [];
-    cart.push(id+"");
-    cartMap[userName] = cart;
+router.post("/add-to-cart", function(req, res, next) {
+  let { userName, id } = req.body;
+  let cart = cartMap[userName] || [];
+  cart.push(id + "");
+  cartMap[userName] = cart;
 
-    res.json({status: true, data: cart});
+  res.json({ status: true, data: cart });
 });
 
-router.post("/get-cart", function (req, res, next) {
-    let {userName} = req.body;
-    let cart = cartMap[userName] || [];
+router.post("/get-cart", function(req, res, next) {
+  let { userName } = req.body;
+  let cart = cartMap[userName] || [];
 
-    let items = products.filter(function(item){
-        return cart.indexOf(item.id+"") >= 0
-    });
+  let items = products.filter(function(item) {
+    return cart.indexOf(item.id + "") >= 0;
+  });
 
-    // TODO :: summarize the repeated items
+  // TODO :: summarize the repeated items
 
-    res.json({status: true, data: items});
+  res.json({ status: true, data: items });
 });
 
+let pNames = [
+  "hen",
+  "arrow",
+  "peacock",
+  "bulb",
+  "fan",
+  "laptop",
+  "desktop",
+  "mobile phone",
+  "cell phone",
+  "charger",
+  "raspburry pi",
+  "light",
+  "toys",
+  "gun",
+  "bomb",
+  "tanker",
+  "rpg",
+  "granide",
+  "ump 9",
+  "sun glass"
+];
+let cos = ["kumaran", "kandan", "velan", "murugan"];
 let products = [];
 
+let pnl = pNames.length;
+let cl = cos.length;
+let name;
 for (let i = 0; i < 100; i++) {
+  name = cos[i % cl] + " " + pNames[i % pnl];
   products.push({
     id: i,
-    name: `Product ${i + 1}`,
-    desc: `This is "Product ${i + 1}" description`,
+    name: name,
+    desc: `This is "Product ${name}"'s description`,
     unitPrice: Number((Math.random() * 2500 + 500).toFixed(2)),
     stock: Number((Math.random() * 90 + 10).toFixed(0)),
     url: [
