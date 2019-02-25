@@ -25,6 +25,17 @@ router.post("/add-to-cart", function(req, res, next) {
   res.json({ status: true, data: cart });
 });
 
+router.all("/product/:id", function(req, res, next) {
+  let {id} = req.params;
+  let product = products.find(pro=>pro.id == id);
+  res.json({
+    status: product ? true : false,
+    data: product,
+    message: product ? "" : "unable to find the product for the given id : " + id
+  });
+});
+
+
 router.post("/get-cart", function(req, res, next) {
   let { userName } = req.body;
   let cart = cartMap[userName] || [];
