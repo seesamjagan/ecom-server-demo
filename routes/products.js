@@ -16,6 +16,19 @@ router.all("/", function(req, res, next) {
   });
 });
 
+router.all("/:page/:size", function(req, res, next) {
+  let { page = 1, size = products.length } = req.params;
+  let start = (Number(page) - 1) * Number(size);
+  let end = start + Number(size);
+  res.json({
+    status: true,
+    data: products.slice(start, end),
+    total: products.length,
+    page,
+    size
+  });
+});
+
 router.post("/add-to-cart", function(req, res, next) {
   let { userName, id } = req.body;
   let cart = cartMap[userName] || [];
